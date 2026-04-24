@@ -156,7 +156,7 @@ static const WritableNumberConfig writableNumbers[] = {
     // Primary storage target temperature
     {"EINSTELL_SPEICHERSOLLTEMP", "Speicher Soll Temperatur Einstellung", 
      cm_manager, 20.0, 60.0, 1.0, "°C", "mdi:thermometer-high", "temperature"},
-    
+
     // Secondary storage target temperature (comfort/eco modes)
     {"EINSTELL_SPEICHERSOLLTEMP2", "Speicher Soll Temperatur 2 Einstellung", 
      cm_manager, 20.0, 60.0, 1.0, "°C", "mdi:thermometer-low", "temperature"},
@@ -207,7 +207,7 @@ static const WritableSelectConfig writableSelects[] = {
     {"PROGRAMMSCHALTER", "Programmschalter", 
      cm_manager, programmschalterOptions, 6, "mdi:dip-switch"},
     // SG Ready control (not a real CAN signal, handled internally)
-    {"SG_READY_STATE", "SG Ready Zustand", 
+    {"SG_READY_STATE", "SG Ready Zustand",
      cm_manager, sgReadyOptions, 4, "mdi:solar-power"}
 };
 
@@ -278,7 +278,7 @@ typedef struct {
 } SignalRequest;
 
 // Include device-specific signal request table (must come AFTER SignalRequest is defined)
-#include "signal_requests_wpl13e.h"
+#include "signal_requests_wpc7.h"
 
 // Runtime state for signal request manager
 static bool requestManagerStarted = false;
@@ -1080,7 +1080,7 @@ void publishMqttDiscovery(const CanMember &cm, const ElsterIndex *ei) {
     else if (strcmp(cm.Name, "MIXER2") == 0) canMemberFriendlyName = "Mischer 2";
     else if (strcmp(cm.Name, "WMZ1") == 0) canMemberFriendlyName = "Wärmemengenzähler 1";
     else if (strcmp(cm.Name, "WMZ2") == 0) canMemberFriendlyName = "Wärmemengenzähler 2";
-    
+
     payload << ",\"device\":{\"identifiers\":[\"" << canMemberDeviceId << "\"],"
             << "\"name\":\"" << canMemberFriendlyName << "\","
             << "\"via_device\":\"" << mainDeviceId << "\","

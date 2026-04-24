@@ -28,7 +28,9 @@ esphome:
     - ha-stiebel-control/elster/NTypes.h
     - ha-stiebel-control/config.h
     - ha-stiebel-control/ha-stiebel-control.h
-    - ha-stiebel-control/signal_requests_wpl13e.h
+#    - ha-stiebel-control/signal_requests_wpl13e.h
+#     ÄNDERUNG HIER: Von wpl13e auf wpc7
+    - ha-stiebel-control/signal_requests_wpc7.h
 
 
   
@@ -102,6 +104,7 @@ mqtt:
         // Datetime control now handled by Home Assistant input_datetime helpers
         ESP_LOGI("MQTT_CONN", "Discovery publication complete");
         
+        /* WPC7 does not support SG Ready or boost control!
         // Publish initial states for SG Ready controls
         ESP_LOGI("MQTT_CONN", "Publishing initial SG Ready states...");
         // Publish default SG Ready state (2 - Normal)
@@ -124,6 +127,7 @@ mqtt:
           currentSgReadyState == 4 ? "4 - Zwang" : "Unbekannt"
         );
         ESP_LOGI("MQTT_CONN", "Initial SG Ready states published");
+        */
   on_disconnect:
     - logger.log:
         level: WARN
@@ -182,77 +186,76 @@ mqtt:
             // Read back to update state
             readSignal(&CanMembers[cm_manager], "PROGRAMMSCHALTER");
     
-    # SG Ready state control
-    - topic: heatingpump/MANAGER/SG_READY_STATE/set
-      then:
-        - lambda: |-
-            ESP_LOGI("MQTT_CMD", "Received SG_READY_STATE command: %s", x.c_str());
-            // Ensure discovery is published
-            publishWritableSelectDiscovery(writableSelects[1]);
-            
-            // Parse the state from the string (format: "1 - EVU Sperre", "2 - Normal", etc.)
-            int state = 0;
-            if (x.find("1 - ") == 0) state = 1;
-            else if (x.find("2 - ") == 0) state = 2;
-            else if (x.find("3 - ") == 0) state = 3;
-            else if (x.find("4 - ") == 0) state = 4;
-            
-            if (state >= 1 && state <= 4) {
-                applySgReadyState(state);
-            } else {
-                ESP_LOGW("MQTT_CMD", "Invalid SG Ready state received: %s", x.c_str());
-            }
-    
-    # SG Ready boost temperature for State 3
-    - topic: heatingpump/MANAGER/SG_READY_BOOST_STATE3/set
-      then:
-        - lambda: |-
-            ESP_LOGI("MQTT_CMD", "Received SG_READY_BOOST_STATE3 command: %s", x.c_str());
-            // Ensure discovery is published
-            publishWritableNumberDiscovery(writableNumbers[2]);
-            // Parse and store the boost value
-            char* endPtr;
-            float boost = strtof(x.c_str(), &endPtr);
-            if (endPtr != x.c_str() && *endPtr == '\0' && boost >= 0.0 && boost <= 10.0) {
-                sgReadyBoostState3 = boost;
-                ESP_LOGI("SG_READY", "State 3 boost set to %.1f°C", boost);
-                // Publish state back
-                char stateTopic[128];
-                snprintf(stateTopic, sizeof(stateTopic), "heatingpump/MANAGER/SG_READY_BOOST_STATE3/state");
-                char valueStr[16];
-                snprintf(valueStr, sizeof(valueStr), "%.1f", boost);
-                id(mqtt_client).publish(stateTopic, valueStr, strlen(valueStr), 0, true);
-                // Update sensor
-                id(sg_ready_boost_state3_sensor).publish_state(boost);
-            } else {
-                ESP_LOGW("MQTT_CMD", "Invalid boost value: %s", x.c_str());
-            }
-    
-    # SG Ready boost temperature for State 4
-    - topic: heatingpump/MANAGER/SG_READY_BOOST_STATE4/set
-      then:
-        - lambda: |-
-            ESP_LOGI("MQTT_CMD", "Received SG_READY_BOOST_STATE4 command: %s", x.c_str());
-            // Ensure discovery is published
-            publishWritableNumberDiscovery(writableNumbers[3]);
-            // Parse and store the boost value
-            char* endPtr;
-            float boost = strtof(x.c_str(), &endPtr);
-            if (endPtr != x.c_str() && *endPtr == '\0' && boost >= 0.0 && boost <= 15.0) {
-                sgReadyBoostState4 = boost;
-                ESP_LOGI("SG_READY", "State 4 boost set to %.1f°C", boost);
-                // Publish state back
-                char stateTopic[128];
-                snprintf(stateTopic, sizeof(stateTopic), "heatingpump/MANAGER/SG_READY_BOOST_STATE4/state");
-                char valueStr[16];
-                snprintf(valueStr, sizeof(valueStr), "%.1f", boost);
-                id(mqtt_client).publish(stateTopic, valueStr, strlen(valueStr), 0, true);
-                // Update sensor
-                id(sg_ready_boost_state4_sensor).publish_state(boost);
-            } else {
-                ESP_LOGW("MQTT_CMD", "Invalid boost value: %s", x.c_str());
-            }
-
+#    # SG Ready state control
+#    - topic: heatingpump/MANAGER/SG_READY_STATE/set
+#      then:
+#        - lambda: |-
+#            ESP_LOGI("MQTT_CMD", "Received SG_READY_STATE command: %s", x.c_str());
+#            // Ensure discovery is published
+#            publishWritableSelectDiscovery(writableSelects[1]);
+#
+#            // Parse the state from the string (format: "1 - EVU Sperre", "2 - Normal", etc.)
+#            int state = 0;
+#            if (x.find("1 - ") == 0) state = 1;
+#            else if (x.find("2 - ") == 0) state = 2;
+#            else if (x.find("3 - ") == 0) state = 3;
+#            else if (x.find("4 - ") == 0) state = 4;
+#
+#            if (state >= 1 && state <= 4) {
+#                applySgReadyState(state);
+#            } else {
+#                ESP_LOGW("MQTT_CMD", "Invalid SG Ready state received: %s", x.c_str());
+#            }
+#
+#    # SG Ready boost temperature for State 3
+#    - topic: heatingpump/MANAGER/SG_READY_BOOST_STATE3/set
+#      then:
+#        - lambda: |-
+#            ESP_LOGI("MQTT_CMD", "Received SG_READY_BOOST_STATE3 command: %s", x.c_str());
+#            // Ensure discovery is published
+#            publishWritableNumberDiscovery(writableNumbers[2]);
+#            // Parse and store the boost value
+#            char* endPtr;
+#            float boost = strtof(x.c_str(), &endPtr);
+#            if (endPtr != x.c_str() && *endPtr == '\0' && boost >= 0.0 && boost <= 10.0) {
+#                sgReadyBoostState3 = boost;
+#                ESP_LOGI("SG_READY", "State 3 boost set to %.1f°C", boost);
+#                // Publish state back
+#                char stateTopic[128];
+#                snprintf(stateTopic, sizeof(stateTopic), "heatingpump/MANAGER/SG_READY_BOOST_STATE3/state");
+#                char valueStr[16];
+#                snprintf(valueStr, sizeof(valueStr), "%.1f", boost);
+#                id(mqtt_client).publish(stateTopic, valueStr, strlen(valueStr), 0, true);
+#                // Update sensor
+#                id(sg_ready_boost_state3_sensor).publish_state(boost);
+#            } else {
+#                ESP_LOGW("MQTT_CMD", "Invalid boost value: %s", x.c_str());
+#            }
+#
+#    # SG Ready boost temperature for State 4
+#    - topic: heatingpump/MANAGER/SG_READY_BOOST_STATE4/set
+#      then:
+#        - lambda: |-
+#            ESP_LOGI("MQTT_CMD", "Received SG_READY_BOOST_STATE4 command: %s", x.c_str());
+#            // Ensure discovery is published
+#            publishWritableNumberDiscovery(writableNumbers[3]);
+#            // Parse and store the boost value
+#            char* endPtr;
+#            float boost = strtof(x.c_str(), &endPtr);
+#            if (endPtr != x.c_str() && *endPtr == '\0' && boost >= 0.0 && boost <= 15.0) {
+#                sgReadyBoostState4 = boost;
+#                ESP_LOGI("SG_READY", "State 4 boost set to %.1f°C", boost);
+#                // Publish state back
+#                char stateTopic[128];
+#                snprintf(stateTopic, sizeof(stateTopic), "heatingpump/MANAGER/SG_READY_BOOST_STATE4/state");
+#                char valueStr[16];
+#                snprintf(valueStr, sizeof(valueStr), "%.1f", boost);
+#                id(mqtt_client).publish(stateTopic, valueStr, strlen(valueStr), 0, true);
+#                // Update sensor
+#                id(sg_ready_boost_state4_sensor).publish_state(boost);
+#            } else {
+#                ESP_LOGW("MQTT_CMD", "Invalid boost value: %s", x.c_str());
+#            }
 
 
 #########################################
@@ -307,25 +310,25 @@ text_sensor:
   #   BERECHNETE TEXT SENSORS             #
   #                                       #
   #########################################
-  - platform: template
-    name: "SG Ready Aktueller Zustand"
-    id: SG_READY_CURRENT_STATE
-    icon: "mdi:solar-power"
-    update_interval: 5s
-    lambda: |-
-      if (currentSgReadyState == 0) {
-        return std::string("Deaktiviert");
-      } else if (currentSgReadyState == 1) {
-        return std::string("1 - EVU Sperre");
-      } else if (currentSgReadyState == 2) {
-        return std::string("2 - Normal");
-      } else if (currentSgReadyState == 3) {
-        return std::string("3 - Empfohlen");
-      } else if (currentSgReadyState == 4) {
-        return std::string("4 - Zwang");
-      } else {
-        return std::string("Unbekannt");
-      }
+#  - platform: template
+#    name: "SG Ready Aktueller Zustand"
+#    id: SG_READY_CURRENT_STATE
+#    icon: "mdi:solar-power"
+#    update_interval: 5s
+#    lambda: |-
+#      if (currentSgReadyState == 0) {
+#        return std::string("Deaktiviert");
+#      } else if (currentSgReadyState == 1) {
+#        return std::string("1 - EVU Sperre");
+#      } else if (currentSgReadyState == 2) {
+#        return std::string("2 - Normal");
+#      } else if (currentSgReadyState == 3) {
+#        return std::string("3 - Empfohlen");
+#      } else if (currentSgReadyState == 4) {
+#        return std::string("4 - Zwang");
+#      } else {
+#        return std::string("Unbekannt");
+#      }
 
   - platform: template
     name: "DATUM"
@@ -392,9 +395,9 @@ wifi:
   fast_connect: true
   power_save_mode: none
   reboot_timeout: 5min
-  ap:
-    ssid: "Heatingpump Fallback Hotspot"
-    password: "AsBl9n46jlOx"
+#  ap:
+#    ssid: "Heatingpump Fallback Hotspot"
+#    password: "AsBl9n46jlOx"
 
 captive_portal:
 
@@ -404,30 +407,30 @@ captive_portal:
 #                                       #
 #########################################
 sensor:
-  # SG Ready boost temperature sensors
-  - platform: template
-    name: "SG Ready Boost State 3"
-    id: sg_ready_boost_state3_sensor
-    unit_of_measurement: "°C"
-    device_class: "temperature"
-    state_class: "measurement"
-    accuracy_decimals: 1
-    icon: "mdi:thermometer-plus"
-    update_interval: 30s
-    lambda: |-
-      return sgReadyBoostState3;
-
-  - platform: template
-    name: "SG Ready Boost State 4"
-    id: sg_ready_boost_state4_sensor
-    unit_of_measurement: "°C"
-    device_class: "temperature"
-    state_class: "measurement"
-    accuracy_decimals: 1
-    icon: "mdi:thermometer-plus"
-    update_interval: 30s
-    lambda: |-
-      return sgReadyBoostState4;
+#  # SG Ready boost temperature sensors
+#  - platform: template
+#    name: "SG Ready Boost State 3"
+#    id: sg_ready_boost_state3_sensor
+#    unit_of_measurement: "°C"
+#    device_class: "temperature"
+#    state_class: "measurement"
+#    accuracy_decimals: 1
+#    icon: "mdi:thermometer-plus"
+#    update_interval: 30s
+#    lambda: |-
+#      return sgReadyBoostState3;
+#
+#  - platform: template
+#    name: "SG Ready Boost State 4"
+#    id: sg_ready_boost_state4_sensor
+#    unit_of_measurement: "°C"
+#    device_class: "temperature"
+#    state_class: "measurement"
+#    accuracy_decimals: 1
+#    icon: "mdi:thermometer-plus"
+#    update_interval: 30s
+#    lambda: |-
+#      return sgReadyBoostState4;
 
   # WiFi and system sensors
   - platform: wifi_signal

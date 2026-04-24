@@ -109,7 +109,24 @@ typedef struct
 static const ElsterIndex ElsterTable[] =
 {
 //  Name                                                 Index   Type
-//  Struktur-Definition in KElsterTable.h 
+//  Struktur-Definition in KElsterTable.h
+/*
+  * Column 1: Name           - Unique identifier string (e.g., "AUSSENTEMP")
+  * Column 2: Index          - Hexadecimal bus address or index (e.g., 0x000c)
+  * Column 3: Type           - Data format/resolution (e.g., et_dec_val for 0.1 resolution)
+  * * --- Home Assistant Metadata (Columns 4-11) ---
+  * Column 4: friendlyName   - German display name; if NULL, the Name (Col 1) is used
+  * Column 5: haComponent    - HA component type (e.g., "sensor", "binary_sensor", "text")
+  * Column 6: haDeviceClass  - HA device category (e.g., "temperature", "energy", "power")
+  * Column 7: unit           - Physical unit of measurement (e.g., "°C", "kWh", "W")
+  * Column 8: stateClass     - HA state handling (e.g., "measurement", "total_increasing")
+  * Column 9: icon           - Material Design Icon identifier (e.g., "mdi:thermometer")
+  * Column 10: payloadOn     - Value for "on" state (for binary sensors, e.g., "ein" or "on")
+  * Column 11: payloadOff    - Value for "off" state (for binary sensors, e.g., "aus" or "off")
+  * * --- Flags (Columns 12-13) ---
+  * Column 12: isBlacklisted - If true, the entry is skipped during all processing
+  * Column 13: hasMetadata   - If true, uses struct metadata; if false, uses system defaults
+  */
   { "INDEX_NOT_FOUND"                             , 0x0000, 0               ,                                                             NULL,            NULL,          NULL,  NULL,               NULL,                    NULL, NULL, NULL,  true, false },
   { "FEHLERMELDUNG"                               , 0x0001, 0               ,                                                             NULL,            NULL,          NULL,  NULL,               NULL,                    NULL, NULL, NULL,  true, false },
   { "UHRZEIT"                                     , 0x0009, et_zeit         ,                                                             NULL,            NULL,          NULL,  NULL,               NULL,                    NULL, NULL, NULL, false, false },
@@ -156,7 +173,7 @@ static const ElsterIndex ElsterTable[] =
   { "VORLAUFISTTEMP", 0x000f, et_dec_val, "Vorlauf Ist Temperatur", "sensor", "temperature", "°C", "measurement", "mdi:thermometer-lines", NULL, NULL, false, true },
   { "RAUMISTTEMP", 0x0011, et_dec_val, "Raum Ist Temperatur", NULL, NULL, NULL, NULL, NULL, NULL, NULL, false, false },
   { "VERSTELLTE_RAUMSOLLTEMP", 0x0012, et_dec_val, "Verstellte Raum Soll Temperatur", NULL, NULL, NULL, NULL, NULL, NULL, NULL, false, false },
-  { "EINSTELL_SPEICHERSOLLTEMP", 0x0013, et_dec_val, "Einstellung Speicher Soll Temperatur", "sensor", "temperature", "°C", "measurement", "mdi:thermometer", NULL, NULL, false, true },
+  { "EINSTELL_SPEICHERSOLLTEMP", 0x0013, et_dec_val, "Einstellung Speicher Soll Temperatur Tag", "sensor", "temperature", "°C", "measurement", "mdi:thermometer", NULL, NULL, false, true },
   { "VERDAMPFERTEMP", 0x0014, et_byte, "Verdampfer Temperatur", "sensor", "temperature", "°C", "measurement", "mdi:thermometer", NULL, NULL, false, true },
   { "SAMMLERSOLLTEMP", 0x0015, et_dec_val, "Sammler Soll Temperatur", NULL, NULL, NULL, NULL, NULL, NULL, NULL, false, false },
   { "RUECKLAUFISTTEMP", 0x0016, et_dec_val, "Rücklauf Ist Temperatur", "sensor", "temperature", "°C", "measurement", "mdi:thermometer-lines", NULL, NULL, false, true },
@@ -190,7 +207,7 @@ static const ElsterIndex ElsterTable[] =
   { "SPEICHER_STATUS", 0x005a, et_little_endian, "Speicher Status", NULL, NULL, NULL, NULL, NULL, NULL, NULL, true, false },
   { "SCHALTERSTELLUNG", 0x005b, 0, "Schalterstellung", NULL, NULL, NULL, NULL, NULL, NULL, NULL, false, false },
   { "ABTAUUNGAKTIV", 0x0061, et_bool, "Abtauung Aktiv", "binary_sensor", "", "", "", "mdi:snowflake-melt", NULL, NULL, false, true },
-  { "WAERMEPUMPEN_STATUS", 0x0062, et_little_endian, "Wärmepumpen Status", NULL, NULL, NULL, NULL, NULL, NULL, NULL, false, false },
+  { "WAERMEPUMPEN_STATUS", 0x0062, et_little_endian, "Wärmepumpen Status", "sensor", "", "", "", "mdi:information-outline", NULL, NULL, false, true },
   { "KESSELSTATUS", 0x0063, et_little_endian, "Kessel Status", NULL, NULL, NULL, NULL, NULL, NULL, NULL, false, false },
   { "SAMMLER_PUMPE", 0x0064, 0, "Sammler Pumpe", NULL, NULL, NULL, NULL, NULL, NULL, NULL, false, false },
   { "MISCHERSTATUS"                               , 0x0066, et_little_endian,                                                             NULL,            NULL,          NULL,  NULL,               NULL,                    NULL, NULL, NULL, false, false },
@@ -245,7 +262,7 @@ static const ElsterIndex ElsterTable[] =
   { "SYSTEM_RESET", 0x00fb, 0, "System Reset", NULL, NULL, NULL, NULL, NULL, NULL, NULL, false, false },
   { "CAN_FEHLERMELDUNG", 0x00fc, 0, "CAN Fehlermeldung", NULL, NULL, NULL, NULL, NULL, NULL, NULL, false, false },
   { "UNGUELTIG", 0x00ff, 0, "Ungültig", NULL, NULL, NULL, NULL, NULL, NULL, NULL, false, false },
-  { "ANTILEGIONELLEN", 0x0101, 0, "Antilegionellen", NULL, NULL, NULL, NULL, NULL, NULL, NULL, false, false },
+  { "ANTILEGIONELLEN", 0x0101, et_little_bool, "Legionellenschutz-Funktion", NULL, NULL, NULL, NULL, "mdi:bacteria-outline", NULL, NULL, false, true },
   { "AUSSENFUEHLER_VERSORGUNG", 0x0102, 0, "Außenfühler Versorgung", NULL, NULL, NULL, NULL, NULL, NULL, NULL, false, false },
   { "AUFHEIZOPTIMIERUNG", 0x0103, 0, "Aufheizoptimierung", NULL, NULL, NULL, NULL, NULL, NULL, NULL, false, false },
   { "FERIENDAUER_TAGE", 0x0106, 0, "Ferien Dauer Tage", NULL, NULL, NULL, NULL, NULL, NULL, NULL, false, false },
@@ -438,7 +455,7 @@ static const ElsterIndex ElsterTable[] =
   { "BIVALENTPARALLELTEMPERATUR_WW", 0x01ad, et_dec_val, "Bivalent Parallel Temperatur Warmwasser", NULL, NULL, NULL, NULL, NULL, NULL, NULL, false, false },
   { "BIVALENZALTERNATIVTEMPERATUR_HZG", 0x01ae, et_dec_val, "Bivalenzalternativ Temperatur Heizung", NULL, NULL, NULL, NULL, NULL, NULL, NULL, false, false },
   { "BIVALENZALTERNATIVTEMPERATUR_WW", 0x01af, et_dec_val, "Bivalenzalternativ Temperatur Warmwasser", NULL, NULL, NULL, NULL, NULL, NULL, NULL, false, false },
-  { "QUELLENSOLLTEMPERATUR", 0x01b0, et_dec_val, "Quellen Soll Temperatur", NULL, NULL, NULL, NULL, NULL, NULL, NULL, false, false },
+  { "QUELLENSOLLTEMPERATUR", 0x01b0, et_dec_val, "Quellen Soll Temperatur", "sensor", "temperature", "°C", "measurement", "mdi:alert-outline", NULL, NULL, false, true },
   { "SOLLTEMP_ANZEIGE_0_1", 0x01b1, 0, "Soll Temperatur Anzeige 0 1", NULL, NULL, NULL, NULL, NULL, NULL, NULL, false, false },
   { "SOLLTEMP_ANZEIGE_0_2", 0x01b2, 0, "Soll Temperatur Anzeige 0 2", NULL, NULL, NULL, NULL, NULL, NULL, NULL, false, false },
   { "SOLLTEMP_ANZEIGE_0_3", 0x01b3, 0, "Soll Temperatur Anzeige 0 3", NULL, NULL, NULL, NULL, NULL, NULL, NULL, false, false },
@@ -477,9 +494,9 @@ static const ElsterIndex ElsterTable[] =
   { "STILLSTANDZEIT_4", 0x01d0, 0, "Stillstandzeit 4", NULL, NULL, NULL, NULL, NULL, NULL, NULL, false, false },
   { "STILLSTANDZEIT_5", 0x01d1, 0, "Stillstandzeit 5", NULL, NULL, NULL, NULL, NULL, NULL, NULL, false, false },
   { "PUMPENSTATUS", 0x01d2, et_little_endian, "Pumpe Status", NULL, NULL, NULL, NULL, NULL, NULL, NULL, false, false },
-  { "QUELLE_IST", 0x01d4, et_dec_val, "Quelle Ist Elektrisch", NULL, NULL, NULL, NULL, NULL, NULL, NULL, false, false },
+  { "QUELLE_IST", 0x01d4, et_dec_val, "Quelle Ist Temperatur", "sensor", "temperature", "°C", "measurement", "mdi:thermometer", NULL, NULL, false, true },
   { "PUFFERSOLL", 0x01d5, et_dec_val, "Puffer Soll Temperatur", NULL, NULL, NULL, NULL, NULL, NULL, NULL, false, false },
-  { "WPVORLAUFIST", 0x01d6, et_dec_val, "Wärmepumpe Vorlauf Ist Temperatur", "sensor", "temperature", "°C", "measurement", "mdi:thermometer-lines", NULL, NULL, false, true },
+  { "WPVORLAUFIST", 0x01d6, et_dec_val, "Wärmepumpe Vorlauf Ist Temperatur", "sensor", "temperature", "°C", "measurement", "mdi:thermometer-lines", NULL, NULL, false, true }, // Direkt in der Wärmepumpe
   { "HILFSKESSELSOLL", 0x01d7, et_dec_val, "Hilfskessel Soll Temperatur", "sensor", "temperature", "°C", "measurement", "mdi:thermometer", NULL, NULL, false, true },
   { "FUEHLER_1", 0x01d8, et_dec_val, "Fühler 1", NULL, NULL, NULL, NULL, NULL, NULL, NULL, false, false },
   { "FUEHLER_2", 0x01d9, et_dec_val, "Fühler 2", NULL, NULL, NULL, NULL, NULL, NULL, NULL, false, false },
@@ -594,7 +611,7 @@ static const ElsterIndex ElsterTable[] =
   { "HYSTERESE_FLAECHE", 0x0262, 0, "Hysterese Fläche", NULL, NULL, NULL, NULL, NULL, NULL, NULL, false, false },
   { "WWKORREKTUR", 0x0263, 0, "Warmwasser Korrektur", NULL, NULL, NULL, NULL, NULL, NULL, NULL, false, false },
   { "TAUPUNKT_TEMP", 0x0264, et_dec_val, "Taupunkt Temperatur", NULL, NULL, NULL, NULL, NULL, NULL, NULL, false, false },
-  { "HEISSGAS_TEMP", 0x0265, et_dec_val, "Heißgas Temperatur", NULL, NULL, NULL, NULL, NULL, NULL, NULL, false, false },
+  { "HEISSGAS_TEMP", 0x0265, et_dec_val, "Verdichter Heißgas", "sensor", "temperature", "°C", "measurement", "mdi:fire", NULL, NULL, false, true },
   { "HDSENSOR_TEMP", 0x0266, 0, "HDSensor Temperatur", NULL, NULL, NULL, NULL, NULL, NULL, NULL, false, false },
   { "MASCHINENDRUCK", 0x0268, 0, "Maschinen Druck", NULL, NULL, NULL, NULL, NULL, NULL, NULL, false, false },
   { "EXT_RAUMFUEHLER", 0x0269, 0, "Ext Raum Fühler", NULL, NULL, NULL, NULL, NULL, NULL, NULL, false, false },
@@ -621,7 +638,7 @@ static const ElsterIndex ElsterTable[] =
   { "FEHLERSTATISTIK_FELDINDEX", 0x027b, 0, "Fehlerstatistik Feldindex", NULL, NULL, NULL, NULL, NULL, NULL, NULL, false, false },
   { "FEHLERSTATISTIK_FEHLERNUMMER", 0x027c, 0, "Fehlerstatistik Fehlernummer", NULL, NULL, NULL, NULL, NULL, NULL, NULL, false, false },
   { "FEHLERSTATISTIK_FEHLERANZAHL", 0x027d, 0, "Fehlerstatistik Fehleranzahl", NULL, NULL, NULL, NULL, NULL, NULL, NULL, false, false },
-  { "WW_ECO", 0x027e, et_bool, "Warmwasser Eco", NULL, NULL, NULL, NULL, NULL, NULL, NULL, false, false },
+  { "WW_ECO", 0x027e, et_bool, "Warmwasser Eco-Modus", NULL, NULL, NULL, NULL, "mdi:leaf", NULL, NULL, false, true },
   { "ANZEIGE_HEIZPROG_NACH_HEIZKREIS", 0x027f, 0, "Anzeige Heizprogramm Nach Heizkreis", NULL, NULL, NULL, NULL, NULL, NULL, NULL, false, false },
   { "SAMMEL_SOLAR_STATUS", 0x0280, 0, "Sammel Solar Status", NULL, NULL, NULL, NULL, NULL, NULL, NULL, false, false },
   { "MODULATION_SOLLWERT_SOLAR_1", 0x0281, 0, "Modulation Sollwert Solar 1", NULL, NULL, NULL, NULL, NULL, NULL, NULL, false, false },
@@ -2414,7 +2431,7 @@ static const ElsterIndex ElsterTable[] =
   { "AUSSEN_FROSTTEMP", 0x0a00, et_dec_val, "Außen Frost Temperatur", NULL, NULL, NULL, NULL, NULL, NULL, NULL, false, false },
   { "BRENNER1LAUFZEIT", 0x0a02, 0, "Brenner 1 Laufzeit", NULL, NULL, NULL, NULL, NULL, NULL, NULL, false, false },
   { "BRENNER2LAUFZEIT", 0x0a04, 0, "Brenner 2 Laufzeit", NULL, NULL, NULL, NULL, NULL, NULL, NULL, false, false },
-  { "EINSTELL_SPEICHERSOLLTEMP2", 0x0a06, et_dec_val, "Einstellung Speicher Soll Temperatur 2", "sensor", "temperature", "°C", "measurement", "mdi:thermometer", NULL, NULL, false, true },
+  { "EINSTELL_SPEICHERSOLLTEMP2", 0x0a06, et_dec_val, "Einstellung Speicher Soll Temperatur Nacht", "sensor", "temperature", "°C", "measurement", "mdi:thermometer", NULL, NULL, false, true },
   { "STATUS_HK_ANZEIGE", 0x0a07, 0, "Status HK Anzeige", NULL, NULL, NULL, NULL, NULL, NULL, NULL, false, false },
   { "UEBERLAUF_BRENNER1LAUFZEIT", 0x0a08, 0, "Überlauf Brenner 1 Laufzeit", NULL, NULL, NULL, NULL, NULL, NULL, NULL, false, false },
   { "UEBERLAUF_BRENNER1STARTS", 0x0a09, 0, "Überlauf Brenner 1 Starts", NULL, NULL, NULL, NULL, NULL, NULL, NULL, false, false },
@@ -3706,20 +3723,20 @@ static const ElsterIndex ElsterTable[] =
   { "MODE_MULTIFUNKTIONSAUSGANG_2", 0xfda5, 0, "Mode Multifunktionsausgang 2", NULL, NULL, NULL, NULL, NULL, NULL, NULL, false, false },
   { "WECHSELANZEIGE", 0xfda6, 0, "Wechselschalter Elektrisch Anzeige", NULL, NULL, NULL, NULL, NULL, NULL, NULL, false, false },
   { "SCHNELLAUFHEIZUNG", 0xfda7, 0, "Schnelle Laufheizung", NULL, NULL, NULL, NULL, NULL, NULL, NULL, false, false },
-  { "ZWEITER_WE_STATUS", 0xfdab, et_little_endian, "Zweiter WE Status", NULL, NULL, NULL, NULL, NULL, NULL, NULL, false, false },
-  { "WP_EVU", 0xfdac, et_little_endian, "Wärmepumpe EVU", NULL, NULL, NULL, NULL, NULL, NULL, NULL, false, false },
-  { "WP_PUMPENSTATUS", 0xfdad, et_little_endian, "Wärmepumpe Pumpenstatus", NULL, NULL, NULL, NULL, NULL, NULL, NULL, false, false },
+  { "ZWEITER_WE_STATUS", 0xfdab, et_little_endian, "Status Zweiter Wärmeerzeuger (Heizstab)", "sensor", "", "", "", "mdi:flash", NULL, NULL, false, true },
+  { "WP_EVU", 0xfdac, et_little_endian, "EVU-Sperre (Energieversorger)", "binary_sensor", "power", "", "", "mdi:transmission-tower", NULL, NULL, false, true },
+  { "WP_PUMPENSTATUS", 0xfdad, et_little_endian, "Wärmepumpe Pumpenstatus", "sensor", "", "", "", "mdi:pump", NULL, NULL, false, true }, // Funktioniert auf WPC7 cm_kessel
   { "WP_STATUS", 0xfdae, et_little_endian, "Wärmepumpe Status", "sensor", "", "", "", "mdi:heat-pump", NULL, NULL, false, true },
   { "DAUERLAUF_PUFFERLADEPUMPE", 0xfdaf, et_little_endian, "Dauerlauf Pufferladepumpe", NULL, NULL, NULL, NULL, NULL, NULL, NULL, false, false },
   { "PUMPENZYKLEN", 0xfdb2, et_little_endian, "Pumpenzyklen", NULL, NULL, NULL, NULL, NULL, NULL, NULL, false, false },
-  { "SOMMERBETRIEB", 0xfdb4, et_bool, "Sommerbetrieb", "binary_sensor", "", "", "", "mdi:weather-sunny", NULL, NULL, false, true },
+  { "SOMMERBETRIEB", 0xfdb4, et_little_bool, "Sommerbetrieb", NULL, NULL, NULL, NULL, "mdi:weather-sunny", NULL, NULL, false, true },
   { "SOLARBETRIEB", 0xfdb7, et_little_endian, "Solarbetrieb", NULL, NULL, NULL, NULL, NULL, NULL, NULL, false, false },
   { "AUTOMATIK_WARMWASSER", 0xfdb9, et_little_bool, "Automatik Warmwasser", NULL, NULL, NULL, NULL, NULL, NULL, NULL, false, false },
-  { "ZWEITER_WE_STATUS", 0xfdba, 0, "Zweiter WE Status", NULL, NULL, NULL, NULL, NULL, NULL, NULL, false, false },
+  //{ "ZWEITER_WE_STATUS", 0xfdba, 0, "Zweiter WE Status", NULL, NULL, NULL, NULL, NULL, NULL, NULL, false, false },
   { "WPSTUFEN_WW", 0xfdbb, et_little_endian, "Wärmepumpe Stufen Warmwasser", NULL, NULL, NULL, NULL, NULL, NULL, NULL, false, false },
-  { "WW_MIT_2WE", 0xfdbc, et_little_endian, "Warmwasser Mit 2 WE", NULL, NULL, NULL, NULL, NULL, NULL, NULL, false, false },
-  { "SPERREN_2WE", 0xfdbd, et_little_endian, "Sperren 2 WE", NULL, NULL, NULL, NULL, NULL, NULL, NULL, false, false },
-  { "FREIGABE_2WE", 0xfdbe, et_little_endian, "Freigabe 2 WE", NULL, NULL, NULL, NULL, NULL, NULL, NULL, false, false },
+  { "WW_MIT_2WE", 0xfdbc, et_little_endian, "Warmwasser Mit 2 WE", NULL, NULL, NULL, NULL, NULL, NULL, NULL, false, false }, // interessant!
+  { "SPERREN_2WE", 0xfdbd, et_little_endian, "Sperren 2 WE", NULL, NULL, NULL, NULL, NULL, NULL, NULL, false, false }, // interessant!
+  { "FREIGABE_2WE", 0xfdbe, et_little_endian, "Freigabe 2 WE", NULL, NULL, NULL, NULL, NULL, NULL, NULL, false, false }, // interessant!
   { "MANUELLES_ABTAUEN", 0xfdc1, 0, "Manuelles Abtauen", NULL, NULL, NULL, NULL, NULL, NULL, NULL, false, false },
   { "HEIZKREIS_PROGRAMMSCHALTER", 0xfdc2, 0, "Heizkreis Programmschalter", NULL, NULL, NULL, NULL, NULL, NULL, NULL, false, false },
   { "MODE_EINGANG2", 0xfdc3, 0, "Mode Eingang 2", NULL, NULL, NULL, NULL, NULL, NULL, NULL, false, false },
@@ -3831,5 +3848,3 @@ static const ErrorIndex BetriebsartList[] =
 };
 
 #endif
-
-

@@ -7,3 +7,6 @@ secrets.yaml
 # Added by cargo
 
 /target
+
+# JetBrains IDE folder
+.idea/
