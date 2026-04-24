@@ -104,6 +104,12 @@ mqtt:
         // Datetime control now handled by Home Assistant input_datetime helpers
         ESP_LOGI("MQTT_CONN", "Discovery publication complete");
         
+        // Read switch states to ensure MQTT states are published
+        // This is important for newly added controls to reflect their current state in Home Assistant and not have them bug off
+        readSignal(&CanMembers[cm_manager], "ANTILEGIONELLEN");
+        readSignal(&CanMembers[cm_manager], "WW_ECO");
+        readSignal(&CanMembers[cm_manager], "SOMMERBETRIEB");
+        
         /* WPC7 does not support SG Ready or boost control!
         // Publish initial states for SG Ready controls
         ESP_LOGI("MQTT_CONN", "Publishing initial SG Ready states...");

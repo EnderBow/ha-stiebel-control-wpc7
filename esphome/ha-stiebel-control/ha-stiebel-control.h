@@ -160,13 +160,14 @@ static const WritableNumberConfig writableNumbers[] = {
     // Secondary storage target temperature (comfort/eco modes)
     {"EINSTELL_SPEICHERSOLLTEMP2", "Speicher Soll Temperatur 2 Einstellung", 
      cm_manager, 20.0, 60.0, 1.0, "°C", "mdi:thermometer-low", "temperature"},
-    
+
     // SG Ready boost temperatures (not real CAN signals, handled internally)
-    {"SG_READY_BOOST_STATE3", "SG Ready Boost Zustand 3", 
-     cm_manager, 0.0, 10.0, 0.5, "°C", "mdi:thermometer-plus", "temperature"},
-    
-    {"SG_READY_BOOST_STATE4", "SG Ready Boost Zustand 4", 
-     cm_manager, 0.0, 15.0, 0.5, "°C", "mdi:thermometer-chevron-up", "temperature"}
+    // DISABLED - not supported for WPC7
+    //{"SG_READY_BOOST_STATE3", "SG Ready Boost Zustand 3",
+    // cm_manager, 0.0, 10.0, 0.5, "°C", "mdi:thermometer-plus", "temperature"},
+    //
+    //{"SG_READY_BOOST_STATE4", "SG Ready Boost Zustand 4",
+    // cm_manager, 0.0, 15.0, 0.5, "°C", "mdi:thermometer-chevron-up", "temperature"}
 };
 
 static const size_t WRITABLE_NUMBER_COUNT = sizeof(writableNumbers) / sizeof(WritableNumberConfig);
@@ -207,8 +208,9 @@ static const WritableSelectConfig writableSelects[] = {
     {"PROGRAMMSCHALTER", "Programmschalter", 
      cm_manager, programmschalterOptions, 6, "mdi:dip-switch"},
     // SG Ready control (not a real CAN signal, handled internally)
-    {"SG_READY_STATE", "SG Ready Zustand",
-     cm_manager, sgReadyOptions, 4, "mdi:solar-power"}
+    // DISABLED - not supported for WPC7
+    //{"SG_READY_STATE", "SG Ready Zustand",
+    // cm_manager, sgReadyOptions, 4, "mdi:solar-power"}
 };
 
 static const size_t WRITABLE_SELECT_COUNT = sizeof(writableSelects) / sizeof(WritableSelectConfig);

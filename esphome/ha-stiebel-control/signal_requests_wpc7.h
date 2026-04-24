@@ -34,9 +34,9 @@ static const SignalRequest signalRequests[] = {
     {"EVU_SPERRE_AKTIV", FREQ_1MIN, cm_manager}, // Works
     // {"WP_EVU", FREQ_1MIN, cm_manager},
     //{"ABTAUUNGAKTIV", FREQ_1MIN, cm_heizmodul},
-    {"BETRIEBSART_WP", FREQ_10MIN, cm_manager}, // Works
+    {"BETRIEBSART_WP", FREQ_1MIN, cm_manager}, // Works
     {"PROGRAMMSCHALTER", FREQ_10MIN, cm_manager}, // Works - Tagesbetrieb, ...
-    {"SOMMERBETRIEB", FREQ_1MIN, cm_manager}, // Works
+    {"SOMMERBETRIEB", FREQ_10MIN, cm_manager}, // Works
 
     // ========================================================================
     // TEMPERATURE SIGNALS (30 SECOND INTERVAL)
@@ -116,9 +116,9 @@ static const SignalRequest signalRequests[] = {
     {"HEISSGAS_TEMP", FREQ_30S, cm_kessel}, // Works
     // {"VERDICHTER", FREQ_30S, cm_kessel}, // Borked -> Test with cm_other
     {"WP_PUMPENSTATUS", FREQ_30S, cm_kessel}, // Works
-    {"WW_ECO", FREQ_1MIN, cm_manager}, // Works
+    {"WW_ECO", FREQ_10MIN, cm_manager}, // Works
     {"ZWEITER_WE_STATUS", FREQ_1MIN, cm_manager}, // Unsure - Heizstab?
-    {"ANTILEGIONELLEN", FREQ_1MIN, cm_manager}, // Works
+    {"ANTILEGIONELLEN", FREQ_10MIN, cm_manager}, // Works
 
     // ========================================================================
     // ENERGY COUNTERS (10 MINUTE INTERVAL)
