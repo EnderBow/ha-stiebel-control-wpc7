@@ -1,3 +1,5 @@
+WARNING! There is currently a Bug that resets your heat pumps toggles when the ESP restarts (Legionellen, WW_ECO, Sommerbetrieb)
+
 # ha-stiebel-control
 
 ESPHome/Home Assistant integration for monitoring and controlling Stiebel Eltron heat pumps via CAN bus interface. Features automatic MQTT discovery for 3800+ signals, writable controls, and intelligent sensor management.
